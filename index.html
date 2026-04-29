@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ao_cropper — User Guide</title>
+  <style>
+    :root {
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent: #4f8ef7;
+      --accent2: #7ec8e3;
+      --text: #e2e8f0;
+      --text-muted: #8b95b0;
+      --code-bg: #12151f;
+      --red: #f87171;
+      --green: #4ade80;
+      --yellow: #facc15;
+      --radius: 8px;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+      --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 28px 0;
+    }
+
+    nav .logo {
+      display: block;
+      padding: 0 20px 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    nav .logo img {
+      width: 64px;
+      display: block;
+      margin: 0 auto 8px;
+    }
+
+    nav .logo span {
+      display: block;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--accent2);
+      text-transform: uppercase;
+    }
+
+    nav ul { list-style: none; }
+
+    nav ul li a {
+      display: block;
+      padding: 5px 20px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-left: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    nav ul li a:hover,
+    nav ul li a.active {
+      color: var(--text);
+      border-left-color: var(--accent);
+    }
+
+    nav .nav-section {
+      padding: 14px 20px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    main {
+      max-width: 860px;
+      padding: 48px 56px 96px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      margin-bottom: 56px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero img {
+      width: 120px;
+      border-radius: 12px;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+    }
+
+    .hero h1 span { color: var(--accent); }
+
+    .hero p {
+      margin-top: 8px;
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-blue  { background: #1e3a5f; color: var(--accent2); }
+    .badge-green { background: #14391f; color: var(--green); }
+    .badge-grey  { background: var(--surface2); color: var(--text-muted); }
+
+    /* ── Sections ── */
+    section {
+      margin-bottom: 60px;
+      scroll-margin-top: 24px;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h2 .anchor {
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.85em;
+      margin-left: 8px;
+      opacity: 0;
+      transition: opacity 0.15s;
+    }
+
+    h2:hover .anchor { opacity: 1; }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin: 24px 0 8px;
+      color: var(--accent2);
+    }
+
+    p { margin-bottom: 12px; }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Code ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      overflow-x: auto;
+      margin: 14px 0 20px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    /* ── Comment colour inside pre blocks ── */
+    .cmt { color: #4a5568; }
+    .kw  { color: #7ec8e3; }
+    .str { color: #a3e635; }
+    .flag{ color: #f59e0b; }
+
+    /* ── Tables ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0 20px;
+      font-size: 13.5px;
+    }
+
+    th {
+      text-align: left;
+      padding: 8px 12px;
+      background: var(--surface2);
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--surface2); }
+
+    td code { font-size: 12px; }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+    }
+
+    .card h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 6px;
+    }
+
+    .card p { font-size: 13px; color: var(--text-muted); margin: 0; }
+
+    /* ── Steps ── */
+    .steps { list-style: none; counter-reset: step; margin: 16px 0; }
+
+    .steps li {
+      counter-increment: step;
+      display: flex;
+      gap: 16px;
+      margin-bottom: 20px;
+      align-items: flex-start;
+    }
+
+    .steps li::before {
+      content: counter(step);
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .steps li .step-body { flex: 1; }
+    .steps li .step-body strong { display: block; margin-bottom: 4px; }
+
+    /* ── Callouts ── */
+    .callout {
+      display: flex;
+      gap: 12px;
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin: 16px 0;
+      font-size: 13.5px;
+    }
+
+    .callout-icon { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
+    .callout p { margin: 0; }
+
+    .callout-info  { background: #0f2540; border: 1px solid #1e4080; }
+    .callout-warn  { background: #2a1f00; border: 1px solid #5c4400; }
+    .callout-tip   { background: #0d2818; border: 1px solid #1a4f30; }
+
+    /* ── File tree ── */
+    .file-tree {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.9;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      margin: 14px 0;
+    }
+
+    .ft-dir  { color: var(--accent2); }
+    .ft-file { color: var(--text); }
+    .ft-comment { color: #4a5568; }
+
+    /* ── Keyboard keys ── */
+    kbd {
+      display: inline-block;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      padding: 1px 7px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 80px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); }
+    footer a:hover { color: var(--text); }
+
+    /* ── Placeholder ── */
+    .placeholder {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 32px 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      margin: 16px 0;
+    }
+
+    .placeholder strong { display: block; margin-bottom: 4px; color: var(--text); }
+
+    /* ── Responsive ── */
+    @media (max-width: 800px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      nav { position: static; height: auto; }
+      main { padding: 28px 24px 64px; }
+      .hero { flex-direction: column; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <!-- ── Sidebar nav ── -->
+  <nav>
+    <a class="logo" href="#">
+      <img src="images/ao_cropper.gif" alt="ao_cropper logo" />
+      <span>ao_cropper</span>
+    </a>
+
+    <div class="nav-section">Getting started</div>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#running">Running</a></li>
+    </ul>
+
+    <div class="nav-section">Workflow</div>
+    <ul>
+      <li><a href="#preparing-images">Preparing images</a></li>
+      <li><a href="#interface">Interface overview</a></li>
+      <li><a href="#placing-foveal-centre">Placing the foveal centre</a></li>
+      <li><a href="#placing-crops">Placing crops</a></li>
+      <li><a href="#locate-mode">Locate mode</a></li>
+      <li><a href="#saving">Saving</a></li>
+    </ul>
+
+    <div class="nav-section">Reference</div>
+    <ul>
+      <li><a href="#output">Output files</a></li>
+      <li><a href="#config">Configuration</a></li>
+      <li><a href="#coordinates">Coordinate system</a></li>
+      <li><a href="#cli">CLI reference</a></li>
+    </ul>
+
+    <div class="nav-section">Help</div>
+    <ul>
+      <li><a href="#tips">Tips &amp; best practices</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Main content ── -->
+  <main>
+
+    <!-- Hero -->
+    <div class="hero">
+      <img src="images/ao_cropper.gif" alt="ao_cropper demo" />
+      <div>
+        <h1><span>ao_cropper</span></h1>
+        <p>Crop and scale subsections of large AOSLO retinal images — with automatic coordinate extraction in degrees and microns.</p>
+        <div class="badge-row">
+          <span class="badge badge-blue">Python 3.12+</span>
+          <span class="badge badge-green">MIT license</span>
+          <span class="badge badge-grey">tkinter GUI</span>
+          <span class="badge badge-grey">uv</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── About ── -->
+    <section id="about">
+      <h2>About <a class="anchor" href="#about">#</a></h2>
+      <p>
+        ao_cropper is a desktop tool for efficiently cropping and scaling sections of large AOSLO retinal images.
+        It provides a maps-style zoomable canvas where you place a foveal centre point and an unlimited number of
+        crop boxes with a double-click. All crop coordinates are automatically computed in degrees and microns
+        relative to the foveal centre.
+      </p>
+      <p>
+        On save, labelled crop TIFFs, annotated overview maps, and a CSV of crop metadata are written for every
+        imaging modality found in the same folder as the input file. Multiple modalities (e.g. <em>confocal</em>,
+        <em>split detector</em>) are detected automatically and cropped simultaneously from a single session.
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>Maps-style canvas</h4>
+          <p>Zoom and pan a very large TIFF without loading the whole image into memory at once — only the visible tile is rendered.</p>
+        </div>
+        <div class="card">
+          <h4>Automatic coordinates</h4>
+          <p>Each crop's position is calculated in pixels, microns, and degrees relative to the foveal centre using the Drasdo–Fowler model eye.</p>
+        </div>
+        <div class="card">
+          <h4>Multi-modality</h4>
+          <p>All TIFFs sharing the same filename base are cropped at the same time. One session produces crops for every modality.</p>
+        </div>
+        <div class="card">
+          <h4>Locate mode</h4>
+          <p>Save annotated overview maps only — useful for reviewing crop placement before committing to a full extraction run.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Installation ── -->
+    <section id="installation">
+      <h2>Installation <a class="anchor" href="#installation">#</a></h2>
+      <p>ao_cropper uses <a href="https://docs.astral.sh/uv/" target="_blank">uv</a> for package and environment management. You do not need to manage a virtualenv manually.</p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-body">
+            <strong>Install uv</strong>
+            <p>Follow the instructions on the <a href="https://docs.astral.sh/uv/getting-started/installation/" target="_blank">uv installation page</a> for your operating system.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Clone the repository</strong>
+            <pre><code>git clone https://github.com/thomasmichaelkane/ao_cropper.git
+cd ao_cropper</code></pre>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Install dependencies</strong>
+            <pre><code>uv sync</code></pre>
+            <p>This creates a <code>.venv</code> folder and installs all required packages in one step.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">&#9888;</span>
+        <p><strong>Working directory:</strong> ao_cropper must always be run from the project root directory (where <code>config.yaml</code> lives). Running it from another location will cause an error on startup.</p>
+      </div>
+    </section>
+
+    <!-- ── Running ── -->
+    <section id="running">
+      <h2>Running <a class="anchor" href="#running">#</a></h2>
+
+      <pre><code>uv run ao-cropper <span class="str">&lt;image_path.tif&gt;</span> <span class="str">&lt;OD|OS&gt;</span></code></pre>
+
+      <p><code>image_path</code> must be a single-layer TIFF file. <code>OD</code> is the right eye (oculus dexter), <code>OS</code> is the left eye (oculus sinister). The eye side affects the nasal/temporal axis of the coordinate system.</p>
+
+      <h3>Examples</h3>
+      <pre><code><span class="cmt"># Basic run — uses defaults from config.yaml</span>
+uv run ao-cropper MM_0364_OS_combined_0p3796umpx_split.tif OS
+
+<span class="cmt"># Override axial length and microns-per-pixel for this patient</span>
+uv run ao-cropper MM_0364_OS_combined_0p3796umpx_split.tif OS <span class="flag">-a</span> 23.5 <span class="flag">-m</span> 0.38
+
+<span class="cmt"># Locate mode — save overview maps only, no individual crop TIFFs</span>
+uv run ao-cropper MM_0364_OS_combined_0p3796umpx_split.tif OS <span class="flag">--locate</span></code></pre>
+    </section>
+
+    <!-- ── Preparing images ── -->
+    <section id="preparing-images">
+      <h2>Preparing images <a class="anchor" href="#preparing-images">#</a></h2>
+
+      <h3>File naming convention</h3>
+      <p>
+        Input TIFFs must follow this naming pattern so that ao_cropper can parse the subject ID and detect additional modalities automatically:
+      </p>
+      <pre><code>&lt;ID&gt;_&lt;other_info&gt;_&lt;MODALITY&gt;.tif</code></pre>
+      <p>
+        The <strong>last underscore-delimited segment</strong> before <code>.tif</code> is treated as the modality label.
+        All <code>.tif</code> files in the same folder that share the same <code>&lt;ID&gt;_&lt;other_info&gt;_</code> prefix are detected as additional modalities and cropped simultaneously.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Example filename</th><th>Subject ID</th><th>Modality</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>MM_0364_OS_0p38umpx_split.tif</code></td><td>MM_0364</td><td>split</td></tr>
+          <tr><td><code>MM_0364_OS_0p38umpx_confocal.tif</code></td><td>MM_0364</td><td>confocal</td></tr>
+          <tr><td><code>MM_0364_OS_0p38umpx_avg.tif</code></td><td>MM_0364</td><td>avg</td></tr>
+        </tbody>
+      </table>
+
+      <p>
+        The <code>underscores_in_id_count</code> setting in <code>config.yaml</code> tells the parser how many underscores appear <em>inside</em> the subject ID itself. For <code>MM_0364</code> the value is <code>1</code>; for an ID like <code>P001</code> the value would be <code>0</code>.
+      </p>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">&#8505;</span>
+        <p>TIFFs must be <strong>single-layer</strong> (grayscale). Multi-page or multi-channel TIFFs are not supported.</p>
+      </div>
+
+      <h3>Acquisition parameters</h3>
+      <p>
+        Two patient-specific values affect all degree calculations. Set the defaults in <code>config.yaml</code> and override per-run with CLI flags:
+      </p>
+      <table>
+        <thead>
+          <tr><th>Parameter</th><th>config.yaml key</th><th>CLI flag</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Axial length</td><td><code>acquisition.axial_length</code></td><td><code>-a / --axial-length</code></td><td>Patient axial length in mm — scales the degree conversion.</td></tr>
+          <tr><td>Microns per pixel</td><td><code>acquisition.mpp</code></td><td><code>-m / --mpp</code></td><td>Image scale from acquisition metadata (µm/px).</td></tr>
+        </tbody>
+      </table>
+
+      <div class="placeholder">
+        <strong>Best practice: finding mpp</strong>
+        [Add guidance here on where to read the mpp value from your acquisition system or image metadata, and how to verify it.]
+      </div>
+    </section>
+
+    <!-- ── Interface overview ── -->
+    <section id="interface">
+      <h2>Interface overview <a class="anchor" href="#interface">#</a></h2>
+      <p>ao_cropper opens two windows simultaneously:</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>Canvas window</h4>
+          <p>The main zoomable and pannable view of the TIFF image. All interaction (placing the foveal centre, placing crops, deleting crops) happens here.</p>
+        </div>
+        <div class="card">
+          <h4>Control panel</h4>
+          <p>Shows subject metadata, a live list of placed crops with their ophthalmic coordinates, and the Save / Delete-all buttons.</p>
+        </div>
+      </div>
+
+      <h3>Canvas controls</h3>
+      <table>
+        <thead>
+          <tr><th>Action</th><th>Input</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Zoom in / out</td><td>Mouse wheel (scroll up / down)</td></tr>
+          <tr><td>Pan</td><td>Click and drag</td></tr>
+          <tr><td>Place foveal centre <em>(first)</em></td><td>Double-click on the retina</td></tr>
+          <tr><td>Place a crop box</td><td>Double-click anywhere after the foveal centre is set</td></tr>
+          <tr><td>Delete a crop box</td><td>Right-click on the box</td></tr>
+        </tbody>
+      </table>
+
+      <h3>Control panel buttons</h3>
+      <table>
+        <thead>
+          <tr><th>Button</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Move centre</strong></td><td>Removes the current foveal centre so you can re-place it. All existing crop coordinates update automatically.</td></tr>
+          <tr><td><strong>Rings / Markers</strong></td><td>Toggles the crosshair overlay between concentric degree rings and per-degree tick marks.</td></tr>
+          <tr><td><strong>Delete all</strong></td><td>Removes all crop boxes from the canvas and the list (the foveal centre is kept).</td></tr>
+          <tr><td><strong>Save</strong></td><td>Saves all output files and closes the application.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="placeholder">
+        <strong>Screenshot: annotated interface</strong>
+        [Add an annotated screenshot of the two-window interface here.]
+      </div>
+    </section>
+
+    <!-- ── Placing foveal centre ── -->
+    <section id="placing-foveal-centre">
+      <h2>Placing the foveal centre <a class="anchor" href="#placing-foveal-centre">#</a></h2>
+      <p>
+        The foveal centre is the anchor for every coordinate calculation. It must be placed before any crop boxes can be added.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-body">
+            <strong>Zoom and pan to the fovea</strong>
+            <p>Use the scroll wheel to zoom in and click-drag to pan until the foveal pit is clearly visible.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Double-click on the foveal pit</strong>
+            <p>A full-length crosshair appears centred on the click point. Degree tick marks (or concentric rings) are drawn along the crosshair arms.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Review placement</strong>
+            <p>If the centre is not accurate, click <strong>Move centre</strong> in the control panel to remove it and start again. Any crop boxes already placed are also removed at this point.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <p>Zoom in as far as possible before placing the foveal centre — a small error in the centre position propagates to every crop coordinate.</p>
+      </div>
+
+      <div class="placeholder">
+        <strong>Best practice: identifying the foveal pit</strong>
+        [Add guidance on recognising the foveal pit in different AOSLO modalities (confocal vs split-detector), and any tips specific to your imaging protocol.]
+      </div>
+    </section>
+
+    <!-- ── Placing crops ── -->
+    <section id="placing-crops">
+      <h2>Placing crops <a class="anchor" href="#placing-crops">#</a></h2>
+      <p>
+        After the foveal centre is set, every subsequent double-click places a crop box. Crop boxes are sized in microns (set via <code>crop_size</code> in <code>config.yaml</code>) and are automatically scaled to match the current zoom level.
+      </p>
+
+      <ol class="steps">
+        <li>
+          <div class="step-body">
+            <strong>Navigate to the region of interest</strong>
+            <p>Zoom and pan to the area you want to crop.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Double-click to place a crop box</strong>
+            <p>A red-outlined square appears. The crop number is shown in the top-left corner of the box. The control panel list updates immediately with the crop's coordinates.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Delete a box if needed</strong>
+            <p>Right-click on a box to remove it. The remaining boxes are renumbered and the list updates.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step-body">
+            <strong>Repeat for all regions of interest</strong>
+            <p>There is no limit to the number of crops in a single session.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="callout callout-info">
+        <span class="callout-icon">&#8505;</span>
+        <p>Hovering over a crop box turns its outline <span style="color:var(--yellow)">yellow</span>, making it easier to identify which box corresponds to which entry in the control panel list.</p>
+      </div>
+
+      <div class="placeholder">
+        <strong>Best practice: crop placement strategy</strong>
+        [Add guidance here on how to systematically select crop locations — e.g. along specific meridians, at target eccentricities, avoiding blood vessels or imaging artefacts.]
+      </div>
+    </section>
+
+    <!-- ── Locate mode ── -->
+    <section id="locate-mode">
+      <h2>Locate mode <a class="anchor" href="#locate-mode">#</a></h2>
+      <p>
+        Locate mode saves annotated overview maps and a coordinate CSV <em>without</em> extracting individual crop TIFFs.
+        It is useful for reviewing placement accuracy before running a full extraction.
+      </p>
+
+      <pre><code>uv run ao-cropper MM_0364_OS_0p38umpx_split.tif OS <span class="flag">--locate</span></code></pre>
+
+      <p>The output folder is suffixed with <code>_locate</code>:</p>
+      <div class="file-tree">
+        <span class="ft-dir">ao_crops_2025-06-01_14-30-00_locate/</span><br>
+        &nbsp;&nbsp;<span class="ft-dir">Canvases/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-comment"># annotated overview per modality</span><br>
+        &nbsp;&nbsp;<span class="ft-file">crop_location_data.csv</span><br>
+        &nbsp;&nbsp;<span class="ft-file">LUT.csv</span>
+      </div>
+
+      <div class="callout callout-tip">
+        <span class="callout-icon">&#10003;</span>
+        <p>Run in locate mode first on a new dataset to verify that the foveal centre and crop positions look correct before committing to a full extraction session.</p>
+      </div>
+    </section>
+
+    <!-- ── Saving ── -->
+    <section id="saving">
+      <h2>Saving <a class="anchor" href="#saving">#</a></h2>
+      <p>
+        Click <strong>Save</strong> in the control panel when you are happy with all crop placements.
+        ao_cropper creates a timestamped output folder alongside the input image and writes all files
+        automatically, then closes.
+      </p>
+
+      <div class="callout callout-warn">
+        <span class="callout-icon">&#9888;</span>
+        <p>There is currently no "save and continue" option — <strong>Save</strong> writes outputs and closes the session. Place <em>all</em> crops before saving.</p>
+      </div>
+    </section>
+
+    <!-- ── Output files ── -->
+    <section id="output">
+      <h2>Output files <a class="anchor" href="#output">#</a></h2>
+
+      <h3>Normal run</h3>
+      <div class="file-tree">
+        <span class="ft-dir">ao_crops_YYYY-MM-DD_HH-MM-SS/</span><br>
+        &nbsp;&nbsp;<span class="ft-dir">Crops/</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-dir">&lt;modality&gt;/</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-comment"># one folder per modality</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">&lt;ID&gt;_&lt;eye&gt;_&lt;location&gt;_&lt;size&gt;μm_crop-&lt;n&gt;_&lt;modality&gt;.tif</span><br>
+        &nbsp;&nbsp;<span class="ft-dir">Canvases/</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="ft-file">&lt;ID&gt;_&lt;eye&gt;_crop_locations_&lt;modality&gt;.tif</span><span class="ft-comment">  # full image with boxes drawn</span><br>
+        &nbsp;&nbsp;<span class="ft-file">crop_location_data.csv</span><br>
+        &nbsp;&nbsp;<span class="ft-file">LUT.csv</span>
+      </div>
+
+      <h3>Crop TIFFs</h3>
+      <p>Each crop is saved as a separate TIFF labelled with its ophthalmic coordinates. Example filename:</p>
+      <pre><code>MM_0364_OS_2p1S_3p4N_55μm_crop-1_confocal.tif</code></pre>
+
+      <h3>crop_location_data.csv</h3>
+      <p>One row per crop, with the following columns:</p>
+      <table>
+        <thead>
+          <tr><th>Column</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Crop Number</td><td>Integer ID matching the label on the canvas.</td></tr>
+          <tr><td>CoordV (°)</td><td>Vertical eccentricity in degrees from the foveal centre.</td></tr>
+          <tr><td>MeridianV</td><td><code>S</code> (superior) or <code>I</code> (inferior).</td></tr>
+          <tr><td>CoordH (°)</td><td>Horizontal eccentricity in degrees.</td></tr>
+          <tr><td>MeridianH</td><td><code>N</code> (nasal) or <code>T</code> (temporal).</td></tr>
+          <tr><td>Distance (°)</td><td>Euclidean distance from foveal centre in degrees.</td></tr>
+          <tr><td>Distance (µm)</td><td>Euclidean distance in microns.</td></tr>
+          <tr><td>Centre Pixel (x)</td><td>Absolute pixel x-coordinate of the crop centre in the original image.</td></tr>
+          <tr><td>Centre Pixel (y)</td><td>Absolute pixel y-coordinate of the crop centre in the original image.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>LUT.csv</h3>
+      <p>A two-column lookup table containing the subject ID and the mpp value used for that session. Useful for downstream analysis pipelines that need to recover the scale.</p>
+
+      <h3>Canvases</h3>
+      <p>Full-resolution copies of each modality image with the crosshair and all crop boxes drawn on as coloured overlays. One canvas TIFF is saved per modality.</p>
+    </section>
+
+    <!-- ── Configuration ── -->
+    <section id="config">
+      <h2>Configuration <a class="anchor" href="#config">#</a></h2>
+      <p>All tunable parameters live in <code>config.yaml</code> in the project root.</p>
+
+      <pre><code><span class="cmt"># Patient/image-specific — override per run with -a / -m flags</span>
+acquisition:
+  axial_length: 24.0        <span class="cmt"># mm — affects all degree calculations</span>
+  mpp: 0.6                  <span class="cmt"># µm/px — from image acquisition metadata</span>
+
+units:
+  crop_size: 55             <span class="cmt"># µm — size of each square crop region</span>
+  model_eye_length: 24.0    <span class="cmt"># mm — Drasdo & Fowler model eye reference</span>
+  reference_mpd: 291        <span class="cmt"># µm/° — model eye microns per degree</span>
+  max_image_pixels: 1_000_000_000
+
+text:
+  underscores_in_id_count: 1   <span class="cmt"># underscores inside the subject ID</span>
+  font_size: 48
+
+crosshair:
+  colour: white
+  length_pixels: 20_000
+  mark_width: 15
+
+crop_box:
+  colour: red
+  hover_colour: yellow
+  label_font_size: 48</code></pre>
+
+      <table>
+        <thead>
+          <tr><th>Key</th><th>Description</th><th>Typical change</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>acquisition.axial_length</code></td><td>Default patient axial length (mm).</td><td>Set to your cohort mean; override per patient with <code>-a</code>.</td></tr>
+          <tr><td><code>acquisition.mpp</code></td><td>Default microns per pixel.</td><td>Set to your system default; override per image with <code>-m</code>.</td></tr>
+          <tr><td><code>units.crop_size</code></td><td>Side length of each crop in microns.</td><td>Change for different study protocols.</td></tr>
+          <tr><td><code>text.underscores_in_id_count</code></td><td>Underscores inside the subject ID.</td><td>Change if your ID format differs (e.g. <code>P001</code> → 0).</td></tr>
+          <tr><td><code>crop_box.colour</code></td><td>Crop box outline colour (any PIL colour name).</td><td>Personal preference.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Coordinate system ── -->
+    <section id="coordinates">
+      <h2>Coordinate system <a class="anchor" href="#coordinates">#</a></h2>
+      <p>
+        All crop distances are computed relative to the foveal centre. The degree conversion uses the
+        <strong>Drasdo–Fowler model eye</strong> scaled by the patient's axial length and the image mpp.
+      </p>
+
+      <h3>Axes and meridians</h3>
+      <table>
+        <thead>
+          <tr><th>Axis</th><th>Positive direction</th><th>Meridian label</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Horizontal (x)</td><td>Nasal</td><td><code>N</code> (nasal) / <code>T</code> (temporal)</td></tr>
+          <tr><td>Vertical (y)</td><td>Inferior (image y increases downward)</td><td><code>I</code> (inferior) / <code>S</code> (superior)</td></tr>
+        </tbody>
+      </table>
+
+      <p>
+        For <strong>OS (left) eyes</strong>, the horizontal axis is flipped so that nasal and temporal remain
+        anatomically correct regardless of how the image is oriented on screen.
+      </p>
+
+      <div class="placeholder">
+        <strong>Diagram: coordinate axes</strong>
+        [Add a schematic showing the N/T/S/I axes for OD and OS eyes, and how they map onto the canvas.]
+      </div>
+    </section>
+
+    <!-- ── CLI reference ── -->
+    <section id="cli">
+      <h2>CLI reference <a class="anchor" href="#cli">#</a></h2>
+
+      <pre><code>uv run ao-cropper &lt;image_path&gt; &lt;OD|OS&gt; [options]</code></pre>
+
+      <table>
+        <thead>
+          <tr><th>Argument / Flag</th><th>Short</th><th>Type</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>image_path</code></td><td>—</td><td>positional</td><td>—</td><td>Path to the input TIFF file.</td></tr>
+          <tr><td><code>eye</code></td><td>—</td><td>positional</td><td>—</td><td><code>OD</code> or <code>OS</code>.</td></tr>
+          <tr><td><code>--axial-length MM</code></td><td><code>-a</code></td><td>float</td><td>config value</td><td>Patient axial length in mm.</td></tr>
+          <tr><td><code>--mpp UM/PX</code></td><td><code>-m</code></td><td>float</td><td>config value</td><td>Microns per pixel from image metadata.</td></tr>
+          <tr><td><code>--locate</code></td><td><code>-l</code></td><td>flag</td><td>off</td><td>Save maps only; skip individual crop TIFFs.</td></tr>
+          <tr><td><code>--help</code></td><td><code>-h</code></td><td>flag</td><td>—</td><td>Show full usage and exit.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── Tips ── -->
+    <section id="tips">
+      <h2>Tips &amp; best practices <a class="anchor" href="#tips">#</a></h2>
+
+      <h3>Before each session</h3>
+      <ul style="padding-left:1.2em; line-height:2;">
+        <li>Confirm <code>mpp</code> and <code>axial_length</code> are correct for this patient — even small errors propagate to every crop coordinate.</li>
+        <li>Check that all modality TIFFs are in the same folder and follow the naming convention.</li>
+        <li>Run with <code>--locate</code> on a test set before a full extraction session.</li>
+      </ul>
+
+      <h3>During a session</h3>
+      <ul style="padding-left:1.2em; line-height:2;">
+        <li>Zoom in as far as possible before placing the foveal centre.</li>
+        <li>Use the <strong>Rings</strong> toggle to display concentric degree circles — helpful for placing crops at specific eccentricities.</li>
+        <li>Right-click to delete a misplaced box rather than saving and rerunning.</li>
+      </ul>
+
+      <div class="placeholder">
+        <strong>Recommended workflow for batch processing</strong>
+        [Add guidance on running ao_cropper across a large dataset — e.g. scripting the CLI calls, organising input folders, checking outputs.]
+      </div>
+
+      <div class="placeholder">
+        <strong>Recommended workflow for a specific study protocol</strong>
+        [Add protocol-specific guidance here — target eccentricities, number of crops per eye, how to handle poor-quality images, etc.]
+      </div>
+    </section>
+
+    <!-- ── Troubleshooting ── -->
+    <section id="troubleshooting">
+      <h2>Troubleshooting <a class="anchor" href="#troubleshooting">#</a></h2>
+
+      <h3>config.yaml not found</h3>
+      <p>ao_cropper must be run from the project root directory. Make sure your current working directory is the repository root before calling <code>uv run ao-cropper ...</code>.</p>
+
+      <h3>No additional modalities detected</h3>
+      <p>Check that the other modality TIFFs are in the same folder as the input file and share the same base filename up to (but not including) the modality segment. Also verify that <code>underscores_in_id_count</code> in <code>config.yaml</code> matches your subject ID format.</p>
+
+      <h3>Image fails to open / PIL safety limit error</h3>
+      <p>Increase <code>units.max_image_pixels</code> in <code>config.yaml</code>. The default is <code>1_000_000_000</code> (1 billion pixels).</p>
+
+      <h3>Crop coordinates look wrong</h3>
+      <p>Double-check that the correct eye side (<code>OD</code> / <code>OS</code>) was passed, and that <code>mpp</code> and <code>axial_length</code> are correct for this patient.</p>
+
+      <div class="placeholder">
+        <strong>Additional known issues and workarounds</strong>
+        [Add any issues specific to your imaging system, HPC environment, or operating system here.]
+      </div>
+    </section>
+
+    <!-- ── Contact ── -->
+    <section id="contact">
+      <h2>Contact <a class="anchor" href="#contact">#</a></h2>
+      <p>
+        Thomas Kane —
+        <a href="mailto:thomas.kane.ucl@gmail.com">thomas.kane.ucl@gmail.com</a> —
+        <a href="https://thomasmichaelkane.github.io/me/" target="_blank">thomasmichaelkane.github.io/me</a>
+      </p>
+      <p>
+        Project: <a href="https://github.com/thomasmichaelkane/ao_cropper" target="_blank">github.com/thomasmichaelkane/ao_cropper</a>
+      </p>
+      <p>
+        <a href="https://github.com/thomasmichaelkane/ao_cropper/issues/new?labels=bug&template=bug-report---.md" target="_blank">Report a bug</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/thomasmichaelkane/ao_cropper/issues/new?labels=enhancement&template=feature-request---.md" target="_blank">Request a feature</a>
+      </p>
+    </section>
+
+    <footer>
+      <p>ao_cropper is distributed under the <a href="LICENSE">MIT License</a>.</p>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('section[id]');
+  const navLinks = document.querySelectorAll('nav a[href^="#"]');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        navLinks.forEach(a => a.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
